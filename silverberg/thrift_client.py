@@ -132,6 +132,7 @@ class OnDemandThriftClient(object):
     def _connection_made(self, client):
         self._state = _State.CONNECTED
         self._current_client = client
+        self._last_address = self._trnasport.getPeer()
 
         # XXX: Is the above state change sufficient to deal with re-entrancy?
 
@@ -219,3 +220,20 @@ class OnDemandThriftClient(object):
             return succeed(None)
         elif self._state == _State.DISCONNECTING:
             return self._notify_on_disconnect()
+
+    def get_address(self):
+        """
+        Return IP address of cassandra host currently connected to
+        :return: a `twisted.internet.interfaces.Address` instance if connected
+                 otherwise None
+        """
+        if self._state in (_State.CONNECTED, _State.CONNECTING):
+            return self._transport.getPeer()
+        return None
+
+    def get_last_address(self):
+        """
+        Return last address connection was attempted to if currently disconnected. Otherwise,
+        return current address
+        """
+        pass

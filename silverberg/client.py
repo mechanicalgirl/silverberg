@@ -110,6 +110,13 @@ class CQLClient(object):
         d.addCallback(_vers)
         return d
 
+    def get_address(self):
+        """
+        Return IP address of cassandra host connected to
+        :return: a `twisted.internet.interfaces.Address` instance
+        """
+        return self._client.get_address()
+
     def _unmarshal_result(self, schema, raw_rows):
         rows = []
 

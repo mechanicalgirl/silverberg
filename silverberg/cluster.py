@@ -31,14 +31,17 @@ class RoundRobinCassandraCluster(object):
 
     :param str user: Optional username.
     :param str password: Optional password.
+
+    :param log: Optional logger that has msg() with same signature as `twisted.python.log.msg`
     """
 
-    def __init__(self, seed_endpoints, keyspace, user=None, password=None):
+    def __init__(self, seed_endpoints, keyspace, user=None, password=None, log=None):
         self._seed_clients = [
             CQLClient(endpoint, keyspace, user, password)
             for endpoint in seed_endpoints
         ]
         self._client_idx = 0
+        self._log = log
 
     def execute(self, *args, **kwargs):
         """
@@ -49,6 +52,10 @@ class RoundRobinCassandraCluster(object):
 
         def _client_error(failure, client_i):
             failure.trap(ConnectError)
+            if self._log:
+                self._log.msg('Could not connect to {node}',
+                              node=self._seed_clients[client_t].get_address(),
+                              reason=failure)
             client_i = (client_i + 1) % num_clients
             if client_i == start_client:
                 return failure
