@@ -25,7 +25,7 @@ import calendar
 
 try:
     from blist import sortedset
-    assert sortedset  # a trick to get rid of E123 from pyflakes 
+    assert sortedset  # a trick to get rid of E123 from pyflakes
 except ImportError:
     sortedset = set
 
