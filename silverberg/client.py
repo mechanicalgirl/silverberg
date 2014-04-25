@@ -119,9 +119,8 @@ class CQLClient(object):
                 return
 
             # Differentiate between regular and collection types
-            # Collection types look like 'ListType(SomeCassandraType)', or 'MapType(KeyType, ValType)'            
+            # Collection types look like 'ListType(SomeCassandraType)', or 'MapType(KeyType, ValType)'
             # so try split into 1~3 parts and check if we can marshal them            
-            #types = str(vtype).replace(")", "").split("(")
             types = re.split('\(|,|\)', str(vtype).rstrip(')'))
 
             # Regular type
@@ -133,10 +132,11 @@ class CQLClient(object):
             elif len(types) == 2:
                 if types[0] in _unmarshallers and types[1] in _unmarshallers:
                     return _unmarshallers[types[0]](types[1], val)
-            
+
             # Map
             elif len(types) == 3:
-                if types[0] in _unmarshallers and types[1] in _unmarshallers and types[2] in _unmarshallers:
+                if types[0] in _unmarshallers and types[1] in _unmarshallers \
+                and types[2] in _unmarshallers:
                     return _unmarshallers[types[0]](types[1], types[2], val)
                 
             # XXX: We do not currently implement the full range of types.

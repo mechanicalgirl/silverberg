@@ -25,7 +25,8 @@ import calendar
 
 try:
     from blist import sortedset
-except:    
+    assert sortedset  # a trick to get rid of E123 from pyflakes 
+except ImportError:
     sortedset = set
 
 import cql
@@ -144,6 +145,7 @@ def unmarshal_list(objtype, bytesstr):
 
     return result
 
+
 def unmarshal_set(objtype, bytesstr):
     result = sortedset()
     # First two bytes are an integer of list size
@@ -160,6 +162,7 @@ def unmarshal_set(objtype, bytesstr):
 
     return result
 
+
 def unmarshal_map(key_type, val_type, bytesstr):
     result = {}
     # First two bytes are an integer of list size
@@ -172,14 +175,14 @@ def unmarshal_map(key_type, val_type, bytesstr):
         # key
         key = unmarshallers[key_type](bytesstr[p:p + length])
         p += length
-        
+
         # val len
         length = unmarshal_int(bytesstr[p:p + 2])
         p += 2
         # val
         val = unmarshallers[val_type](bytesstr[p:p + length])
         p += length
-        
+
         result[key] = val
 
     return result
