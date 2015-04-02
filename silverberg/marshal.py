@@ -169,7 +169,7 @@ def unmarshal_set(objtype, bytesstr):
     return result
 
 
-def unmarshal_map(key_type, val_type, bytesstr):
+def unmarshal_map(keytype, valtype, bytesstr):
     result = {}
     # First two bytes are an integer of list size
     numelements = unmarshal_int(bytesstr[:2])
@@ -179,14 +179,14 @@ def unmarshal_map(key_type, val_type, bytesstr):
         length = unmarshal_int(bytesstr[p:p + 2])
         p += 2
         # key
-        key = unmarshallers[key_type](bytesstr[p:p + length])
+        key = unmarshallers[keytype](bytesstr[p:p + length])
         p += length
 
         # val len
         length = unmarshal_int(bytesstr[p:p + 2])
         p += 2
         # val
-        val = unmarshallers[val_type](bytesstr[p:p + length])
+        val = unmarshallers[valtype](bytesstr[p:p + length])
         p += length
 
         result[key] = val
