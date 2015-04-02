@@ -138,7 +138,8 @@ class MarshallingUnmarshallingMap(TestCase):
         marshalled_value_pairs = (
             ('\x00\x00', (INTEGER_TYPE, INTEGER_TYPE), {}),
             ('\x00\x01\x00\x01\x01\x00\x01\x02', (INTEGER_TYPE, INTEGER_TYPE), {1: 2}),
-            ('\x00\x02\x00\x01A\x00\x01\x01\x00\x02BC\x00\x02\x00\x10', (UTF8_TYPE, INTEGER_TYPE), {'A': 1, 'BC': 0x10})
+            ('\x00\x02\x00\x01A\x00\x01\x01\x00\x02BC\x00\x02\x00\x10', (UTF8_TYPE, INTEGER_TYPE),
+                {'A': 1, 'BC': 0x10})
         )
         for marshalled, (keytype, valtype), expected in marshalled_value_pairs:
             unmarshalled = unmarshal_map(keytype, valtype, marshalled)
