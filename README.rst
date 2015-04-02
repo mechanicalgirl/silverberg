@@ -30,6 +30,14 @@ Prerequisites:
 Version History
 ===============
 
+- 0.1.11
+    - Unmarshalling bool type
+- 0.1.10
+    - (vvoznesensky) Fixed authentication
+- 0.1.9
+    - (harii) Adding new timestamp type from Cassandra 2.0
+- 0.1.8
+    - Option to disconnect TCP connection when cancelling running query
 - 0.1.7
     - (jmahonin) Added support for unmarshalling Cassandra list types, double
         types, and 32-bit signed int types (``int``, as opposed to ``varint``)

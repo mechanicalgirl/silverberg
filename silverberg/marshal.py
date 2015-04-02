@@ -36,6 +36,7 @@ __all__ = ['prepare', 'marshal', 'unmarshal_noop', 'unmarshallers']
 _param_re = re.compile(r"(?<!strategy_options)(:[a-zA-Z_][a-zA-Z0-9_]*)", re.M)
 
 BYTES_TYPE = "org.apache.cassandra.db.marshal.BytesType"
+BOOLEAN_TYPE = "org.apache.cassandra.db.marshal.BooleanType"
 ASCII_TYPE = "org.apache.cassandra.db.marshal.AsciiType"
 UTF8_TYPE = "org.apache.cassandra.db.marshal.UTF8Type"
 INTEGER_TYPE = "org.apache.cassandra.db.marshal.IntegerType"
@@ -45,6 +46,7 @@ UUID_TYPE = "org.apache.cassandra.db.marshal.UUIDType"
 LEXICAL_UUID_TYPE = "org.apache.cassandra.db.marshal.LexicalType"
 TIME_UUID_TYPE = "org.apache.cassandra.db.marshal.TimeUUIDType"
 TIMESTAMP_TYPE = "org.apache.cassandra.db.marshal.DateType"
+NEW_TIMESTAMP_TYPE = "org.apache.cassandra.db.marshal.TimestampType"
 COUNTER_TYPE = "org.apache.cassandra.db.marshal.CounterColumnType"
 DOUBLE_TYPE = "org.apache.cassandra.db.marshal.DoubleType"
 
@@ -88,6 +90,10 @@ def marshal(term):
 
 def unmarshal_noop(bytestr):
     return bytestr
+
+
+def unmarshal_bool(bytestr):
+    return bytestr == "\x01"
 
 
 def unmarshal_utf8(bytestr):
@@ -188,6 +194,7 @@ def unmarshal_map(key_type, val_type, bytesstr):
     return result
 
 unmarshallers = {BYTES_TYPE:        unmarshal_noop,
+                 BOOLEAN_TYPE:      unmarshal_bool,
                  ASCII_TYPE:        unmarshal_noop,
                  UTF8_TYPE:         unmarshal_utf8,
                  INTEGER_TYPE:      unmarshal_int,
@@ -198,6 +205,7 @@ unmarshallers = {BYTES_TYPE:        unmarshal_noop,
                  LEXICAL_UUID_TYPE: unmarshal_uuid,
                  TIME_UUID_TYPE:    unmarshal_uuid,
                  TIMESTAMP_TYPE:    unmarshal_timestamp,
+                 NEW_TIMESTAMP_TYPE: unmarshal_timestamp,
                  COUNTER_TYPE:      unmarshal_initializable_int,
                  LIST_TYPE:         unmarshal_list,
                  SET_TYPE:          unmarshal_set,
