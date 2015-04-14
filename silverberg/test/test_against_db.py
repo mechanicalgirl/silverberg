@@ -250,6 +250,18 @@ class UnmarshallingTestCase(TestCase):
         client.resume()
         self.addCleanup(client.pause)
 
+    def test_none(self):
+        """
+        Marshal and unmarshal None.
+        """
+        def check_result(result):
+            self.assertEqual(result, [{"ascii_type": None}])
+
+        d = execute_insert("test", "ascii_type", None, self.primary_key)
+        d.addCallback(lambda _: execute_select("test", "ascii_type",
+                                               self.primary_key))
+        return d.addCallback(check_result)
+
 
 def make_test_method(cql_type, data):
     """
