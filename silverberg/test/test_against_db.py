@@ -112,8 +112,8 @@ cql3_types = {
     },
     'set<int>': {
         'description': 'A collection of one or more elements',
-        'insert': (1, 2, 3, 4),
-        'expected': (1, 2, 3, 4)
+        'insert': set([1, 2, 3, 4]),
+        'expected': set([1, 2, 3, 4])
     },
     'text': {
         'description': 'UTF-8 encoded string',
@@ -205,11 +205,23 @@ def execute_insert(table_name, column_name, value, primary_key):
     Execute an insert value into a column in a particular table, using
     a unique primary key.
     """
-    return client.execute(
-        "INSERT INTO {0} (test_key, {1}) values (:key, :val);"
-        .format(table_name, column_name),
-        {"key": primary_key, "val": value},
-        consistency=ConsistencyLevel.ALL)
+    params = {"key": primary_key, "val": value}
+    if column_name == "counter_type":  # counters can only be set
+        query = ("UPDATE {0} SET {1} = {1} + :val WHERE test_key = :key;"
+                 .format(table_name, column_name))
+
+    # not sure why sets are not marshalled right, but putting a set in
+    # results in an error
+    elif column_name == "set_type":
+        query = ("INSERT INTO {0} (test_key, {1}) values (:key, {2});"
+                 .format(table_name, column_name,
+                         '{' + ", ".join([str(x) for x in value]) + '}'))
+        params.pop("val")
+    else:
+        query = ("INSERT INTO {0} (test_key, {1}) values (:key, :val);"
+                 .format(table_name, column_name))
+
+    return client.execute(query, params, consistency=ConsistencyLevel.ALL)
 
 
 def execute_select(table_name, column_name, primary_key):
