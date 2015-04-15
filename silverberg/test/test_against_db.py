@@ -160,7 +160,7 @@ def short_name(cql_type):
 
 def set_up_cassandra(endpoint, ks="test_marshalling"):
     """
-    Create keyspace, a table with one column of each time, insert some
+    Create keyspace, a table with one column of each type, insert some
     values into all of them, and test unmarshalling
     """
     host, port = endpoint.split(':')
