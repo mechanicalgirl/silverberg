@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-if [[ "${CASS_VERSION}" =~ "^1" ]]; then
+if [[ "${CASS_VERSION}" == 1.2* ]]; then
+
+    echo "Installing Cassandra ${CASS_VERSION}"
 
     sudo rm -rf /var/lib/cassandra/*
 
