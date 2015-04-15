@@ -8,9 +8,9 @@ if [[ "${CASS_VERSION}" == 1.2* ]]; then
     sudo rm -rf /var/lib/cassandra/*
 
     if [ "${CASS_VERSION}" == "1.2.19" ]; then
-        wget http://mirror.its.dal.ca/apache/cassandra/1.2.19/apache-cassandra-1.2.19-bin.tar.gz && tar -xvzf apache-cassandra-1.2.19-bin.tar.gz && JVM_OPTS="-Xss512k" sudo sh apache-cassandra-1.2.19/bin/cassandra
+        wget http://mirror.its.dal.ca/apache/cassandra/1.2.19/apache-cassandra-1.2.19-bin.tar.gz && tar -xvzf apache-cassandra-1.2.19-bin.tar.gz && sudo JVM_OPTS="-Xss512k" sh apache-cassandra-1.2.19/bin/cassandra
     else
-        wget http://archive.apache.org/dist/cassandra/${CASS_VERSION}/apache-cassandra-${CASS_VERSION}-bin.tar.gz && tar -xvzf apache-cassandra-${CASS_VERSION}-bin.tar.gz && JVM_OPTS="-Xss512k" sudo sh apache-cassandra-${CASS_VERSION}/bin/cassandra
+        wget http://archive.apache.org/dist/cassandra/${CASS_VERSION}/apache-cassandra-${CASS_VERSION}-bin.tar.gz && tar -xvzf apache-cassandra-${CASS_VERSION}-bin.tar.gz && sudo JVM_OPTS="-Xss512k" sh apache-cassandra-${CASS_VERSION}/bin/cassandra
     fi
 
 fi
