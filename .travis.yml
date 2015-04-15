@@ -5,10 +5,24 @@ python:
     - 2.7
     - pypy
 
+env:
+  global:
+     - CASSANDRA_ENDPOINT="localhost:9160"
+  matrix:
+     - CASS_VERSION=1.2.10
+     - CASS_VERSION=1.2.19
+     - CASS_VERSION=latest
+
 matrix:
     allow_failures:
         - python: 2.6
         - python: pypy
+
+services:
+    - cassandra
+
+before_install:
+    - ./.travis/install_cassandra.sh
 
 install:
     - pip install -r requirements.txt
