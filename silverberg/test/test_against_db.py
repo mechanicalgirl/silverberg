@@ -76,7 +76,8 @@ cql3_types = {
     'decimal': {
         'description': 'Variable-precision decimal',
         'insert': 1.513623,
-        'expected': 1.513623
+        'expected': 1.513623,
+        'supported': False
     },
     'double': {
         'description': '64-bit IEEE-754 floating point',
@@ -117,8 +118,8 @@ cql3_types = {
     },
     'text': {
         'description': 'UTF-8 encoded string',
-        'insert': '(づ｡◕‿‿◕｡)づ',
-        'expected': '(づ｡◕‿‿◕｡)づ'
+        'insert': u'(づ｡◕‿‿◕｡)づ',
+        'expected': u'(づ｡◕‿‿◕｡)づ'
     },
     'timestamp': {
         'description': 'Date plus time, encoded as 8 bytes since epoch',
@@ -137,8 +138,8 @@ cql3_types = {
     },
     'varchar': {
         'description': 'UTF-8 encoded string',
-        'insert': '(づ｡◕‿‿◕｡)づ',
-        'expected': '(づ｡◕‿‿◕｡)づ'
+        'insert': u'(づ｡◕‿‿◕｡)づ',
+        'expected': u'(づ｡◕‿‿◕｡)づ'
     },
     'varint': {
         'description': 'Arbitrary-precision integer',
