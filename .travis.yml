@@ -11,11 +11,11 @@ env:
      - CASS_VERSION=1.2.8
      - CASS_VERSION=1.2.10
      - CASS_VERSION=1.2.19
-     - CASS_VERSION=latest
 
 matrix:
     allow_failures:
         - python: pypy
+        - env: CASS_VERSION=latest
     exclude:
         - python: pypy
           env: CASS_VERSION=1.2.8
