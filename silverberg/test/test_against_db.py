@@ -88,6 +88,7 @@ cql3_types = {
         'description': '32-bit IEEE-754 floating point',
         'insert': 136.36460918,
         'expected': 136.36460918,
+        'supported': False
     },
     'inet': {
         'description': 'IP address string in IPv4 or IPv6 format*',
@@ -187,7 +188,7 @@ def set_up_cassandra(endpoint, ks="test_marshalling"):
     # any other non-primary-key values.  Counters also can't be primary keys
     cursor.execute(
         "CREATE TABLE test_counter ("
-        "test_key int PRIMARY KEY, counter_type counter);")
+        "test_key timestamp PRIMARY KEY, counter_type counter);")
 
     cursor.close()
 
