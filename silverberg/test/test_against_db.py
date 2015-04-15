@@ -60,8 +60,8 @@ cql3_types = {
     'blob': {
         'description': ('Arbitrary bytes (no validation), '
                         'expressed as hexadecimal'),
-        'insert': '6d796b657931',
-        'expected': 'mykey1'
+        'insert': '6d79626c6f62',
+        'expected': 'myblob'
     },
     'boolean': {
         'description': 'true or false',
