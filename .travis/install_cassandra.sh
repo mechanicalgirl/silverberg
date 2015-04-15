@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ "${CASS_VERSION}" =~ "^1\.2" ]; then
+if [[ "${CASS_VERSION}" =~ "^1\.2" ]]; then
 
     sudo rm -rf /var/lib/cassandra/*
 
