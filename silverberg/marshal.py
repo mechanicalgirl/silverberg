@@ -85,7 +85,9 @@ def marshal(term):
         # timezone-aware, then its corresponding UTC time is stored
         return str(int(calendar.timegm(term.utctimetuple()) * 1000 + term.microsecond / 1e3))
     elif isinstance(term, sortedset):
-        return '{%s}' % (','.join(map(marshal, term)))
+        # python str() produces: set([1, 2, 3]), while cassandra wants: {1, 2, 3}
+        # so we have to marshal each element one by one.
+        return '{%s}' % (', '.join(map(marshal, term)))
     else:
         return str(term)
 
