@@ -88,6 +88,8 @@ def marshal(term):
         # python str() produces: set([1, 2, 3]), while cassandra wants: {1, 2, 3}
         # so we have to marshal each element one by one.
         return '{%s}' % (', '.join(map(marshal, term)))
+    elif term is None:
+        return "null"
     else:
         return str(term)
 
