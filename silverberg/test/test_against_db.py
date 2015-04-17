@@ -280,13 +280,14 @@ def make_test_method(cql_type, data):
 
     f.__name__ = test_case_name
     setattr(UnmarshallingTestCase, test_case_name, f)
+    return f
 
 
 # Dynamically add test methods to the UnmarshallingTestCase class.
 for _type, data in cql3_types.iteritems():
+    func = make_test_method(_type, data)
     if not data.get('supported', True):
-        continue
-    make_test_method(_type, data)
+        func.skip = "type <{0}> not supported yet.".format(short_name(_type))
 
 
 if not _endpoint:
