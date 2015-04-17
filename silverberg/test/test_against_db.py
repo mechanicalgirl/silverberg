@@ -211,14 +211,6 @@ def execute_insert(table_name, column_name, value, primary_key):
     if column_name == "counter_type":  # counters can only be set
         query = ("UPDATE {0} SET {1} = {1} + :val WHERE test_key = :key;"
                  .format(table_name, column_name))
-
-    # not sure why sets are not marshalled right, but putting a set in
-    # results in an error
-    elif column_name == "set_type":
-        query = ("INSERT INTO {0} (test_key, {1}) values (:key, {2});"
-                 .format(table_name, column_name,
-                         '{' + ", ".join([str(x) for x in value]) + '}'))
-        params.pop("val")
     else:
         query = ("INSERT INTO {0} (test_key, {1}) values (:key, :val);"
                  .format(table_name, column_name))
