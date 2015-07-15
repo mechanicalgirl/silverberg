@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -113,6 +115,16 @@ class MarshallingUnmarshallingBoolean(TestCase):
     def test_unmarshal(self):
         self.assertEqual(unmarshal_bool('\x01'), True)
         self.assertEqual(unmarshal_bool('\x00'), False)
+
+
+class MarshallingList(TestCase):
+    """
+    Test marshalling of list
+    """
+    def test_marshal(self):
+        self.assertEqual(marshal([1, 2]), "[1,2]")
+        self.assertEqual(marshal(["ab", "abc"]), "['ab','abc']")
+        self.assertEqual(marshal([u"ab", u"づ"]), "['ab','\xe3\x81\xa5']")
 
 
 class MarshallingUnmarshallingSet(TestCase):

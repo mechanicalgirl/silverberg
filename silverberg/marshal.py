@@ -76,6 +76,8 @@ def prepare(query, params):
 
 
 def marshal(term):
+    if isinstance(term, list):
+        return '[' + ','.join(map(marshal, term)) + ']'
     if isinstance(term, unicode):
         return "'%s'" % __escape_quotes(term.encode('utf8'))
     elif isinstance(term, str):
