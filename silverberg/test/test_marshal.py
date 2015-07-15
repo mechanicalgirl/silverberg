@@ -28,7 +28,8 @@ from twisted.trial.unittest import TestCase
 
 from silverberg.marshal import (
     marshal, unmarshal_timestamp, unmarshal_int, unmarshal_bool,
-    unmarshal_initializable_int, unmarshal_double, prepare)
+    unmarshal_initializable_int, unmarshal_double, prepare,
+    unmarshal_set, unmarshal_map, sortedset, INTEGER_TYPE, BOOLEAN_TYPE, UTF8_TYPE)
 
 
 class StatementPreparation(TestCase):
@@ -124,3 +125,43 @@ class MarshallingList(TestCase):
         self.assertEqual(marshal([1, 2]), "[1,2]")
         self.assertEqual(marshal(["ab", "abc"]), "['ab','abc']")
         self.assertEqual(marshal([u"ab", u"づ"]), "['ab','\xe3\x81\xa5']")
+
+
+class MarshallingUnmarshallingSet(TestCase):
+    """
+    Test marshalling and unmarshalling of sets
+    """
+    def test_marshal_set(self):
+        to_marshal = sortedset([])
+        self.assertEqual(marshal(to_marshal), '{}')
+        # the order of elements in set might change
+        to_marshal = sortedset([1, 2])
+        self.assertIn(marshal(to_marshal), {'{1, 2}', '{2, 1}'})
+        to_marshal = sortedset(['1', '2'])
+        self.assertIn(marshal(to_marshal), {"{'1', '2'}", "{'2', '1'}"})
+
+    def test_unmarshal_set(self):
+        marshalled_value_pairs = (
+            ('\x00\x00', INTEGER_TYPE, sortedset()),
+            ('\x00\x01\x00\x04\x00\x00\x00\x05', INTEGER_TYPE, sortedset([5])),
+            ('\x00\x02\x00\x01\x00\x00\x01\x01', BOOLEAN_TYPE, sortedset([False, True]))
+        )
+        for marshalled, valtype, expected in marshalled_value_pairs:
+            unmarshalled = unmarshal_set(valtype, marshalled)
+            self.assertEqual(unmarshalled, expected)
+
+
+class MarshallingUnmarshallingMap(TestCase):
+    """
+    Test marshalling and unmarshalling of maps
+    """
+    def test_unmarshal_map(self):
+        marshalled_value_pairs = (
+            ('\x00\x00', (INTEGER_TYPE, INTEGER_TYPE), {}),
+            ('\x00\x01\x00\x01\x01\x00\x01\x02', (INTEGER_TYPE, INTEGER_TYPE), {1: 2}),
+            ('\x00\x02\x00\x01A\x00\x01\x01\x00\x02BC\x00\x02\x00\x10', (UTF8_TYPE, INTEGER_TYPE),
+                {'A': 1, 'BC': 0x10})
+        )
+        for marshalled, (keytype, valtype), expected in marshalled_value_pairs:
+            unmarshalled = unmarshal_map(keytype, valtype, marshalled)
+            self.assertEqual(unmarshalled, expected)

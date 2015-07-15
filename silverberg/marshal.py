@@ -23,6 +23,12 @@ from uuid import UUID
 from datetime import datetime
 import calendar
 
+try:
+    from blist import sortedset
+    assert sortedset  # a trick to get rid of E123 from pyflakes
+except ImportError:
+    sortedset = set
+
 import cql
 
 __all__ = ['prepare', 'marshal', 'unmarshal_noop', 'unmarshallers']
@@ -45,6 +51,8 @@ COUNTER_TYPE = "org.apache.cassandra.db.marshal.CounterColumnType"
 DOUBLE_TYPE = "org.apache.cassandra.db.marshal.DoubleType"
 
 LIST_TYPE = "org.apache.cassandra.db.marshal.ListType"
+SET_TYPE = "org.apache.cassandra.db.marshal.SetType"
+MAP_TYPE = "org.apache.cassandra.db.marshal.MapType"
 
 
 def prepare(query, params):
@@ -78,6 +86,12 @@ def marshal(term):
         # If the datetime is naive, then it is considered UTC time and stored. If it is
         # timezone-aware, then its corresponding UTC time is stored
         return str(int(calendar.timegm(term.utctimetuple()) * 1000 + term.microsecond / 1e3))
+    elif isinstance(term, set) or isinstance(term, sortedset):
+        # python str() produces: set([1, 2, 3]), while cassandra wants: {1, 2, 3}
+        # so we have to marshal each element one by one.
+        return '{%s}' % (', '.join(map(marshal, term)))
+    elif term is None:
+        return "null"
     else:
         return str(term)
 
@@ -146,6 +160,47 @@ def unmarshal_list(objtype, bytesstr):
     return result
 
 
+def unmarshal_set(objtype, bytesstr):
+    result = sortedset()
+    # First two bytes are an integer of list size
+    numelements = unmarshal_int(bytesstr[:2])
+    p = 2
+    for n in range(numelements):
+        # Two bytes of list element size, as an integer
+        length = unmarshal_int(bytesstr[p:p + 2])
+        p += 2
+        # Next 'length' bytes need unmarshalling into the specific type
+        value = unmarshallers[objtype](bytesstr[p:p + length])
+        p += length
+        result.add(value)
+
+    return result
+
+
+def unmarshal_map(keytype, valtype, bytesstr):
+    result = {}
+    # First two bytes are an integer of list size
+    numelements = unmarshal_int(bytesstr[:2])
+    p = 2
+    for n in range(numelements):
+        # key len
+        length = unmarshal_int(bytesstr[p:p + 2])
+        p += 2
+        # key
+        key = unmarshallers[keytype](bytesstr[p:p + length])
+        p += length
+
+        # val len
+        length = unmarshal_int(bytesstr[p:p + 2])
+        p += 2
+        # val
+        val = unmarshallers[valtype](bytesstr[p:p + length])
+        p += length
+
+        result[key] = val
+
+    return result
+
 unmarshallers = {BYTES_TYPE:        unmarshal_noop,
                  BOOLEAN_TYPE:      unmarshal_bool,
                  ASCII_TYPE:        unmarshal_noop,
@@ -160,7 +215,9 @@ unmarshallers = {BYTES_TYPE:        unmarshal_noop,
                  TIMESTAMP_TYPE:    unmarshal_timestamp,
                  NEW_TIMESTAMP_TYPE: unmarshal_timestamp,
                  COUNTER_TYPE:      unmarshal_initializable_int,
-                 LIST_TYPE:         unmarshal_list}
+                 LIST_TYPE:         unmarshal_list,
+                 SET_TYPE:          unmarshal_set,
+                 MAP_TYPE:          unmarshal_map}
 
 
 def decode_bigint(term):
